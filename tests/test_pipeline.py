@@ -4,8 +4,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 
-from house_price.train import build_preprocessor
-
+from house_price.preprocessing import build_preprocessor
 
 def test_pipeline_handles_missing_and_unseen_values():
     """Preprocessing should handle missing and unseen feature values."""

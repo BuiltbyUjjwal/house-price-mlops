@@ -1,5 +1,28 @@
 {
-    "mae": 17692.907619863014,
-    "rmse": 29216.08492392556,
-    "r2": 0.8887166470857233
+    "metrics": {
+        "mae": 17559.78481164384,
+        "rmse": 29031.583319013414,
+        "r2": 0.8901177332954783
+    },
+    "quality_gate": {
+        "passed": true,
+        "failures": []
+    },
+    "configuration": {
+        "random_state": 42,
+        "validation": {
+            "test_size": 0.2
+        },
+        "model": {
+            "n_estimators": 200,
+            "n_jobs": -1
+        },
+        "quality_gate": {
+            "max_mae": 30000,
+            "max_rmse": 45000,
+            "min_r2": 0.75
+        }
+    },
+    "validation_samples": 292,
+    "training_samples": 1168
 }
