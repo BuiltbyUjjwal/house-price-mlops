@@ -23,6 +23,6 @@
             "min_r2": 0.75
         }
     },
-    "validation_samples": 292,
-    "training_samples": 1168
+    "training_samples": 1168,
+    "validation_samples": 292
 }

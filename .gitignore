@@ -9,3 +9,8 @@ mlruns/
 models/*
 data/raw/train.csv
 data/processed/*
+
+# MLflow tracking data
+mlflow.db
+mlflow.db-*
+mlartifacts/
