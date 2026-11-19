@@ -1,0 +1,15 @@
+stages:
+  train:
+    cmd: python -m house_price.train
+    deps:
+    - data/raw/train.csv
+    - pyproject.toml
+    - requirements.txt
+    - src/house_price
+    params:
+    - configs/config.yaml:
+    outs:
+    - models/house_price_model.joblib
+    metrics:
+    - reports/metrics.json:
+        cache: false

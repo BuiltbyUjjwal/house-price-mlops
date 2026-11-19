@@ -1,0 +1,43 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python -m house_price.train
+    deps:
+    - path: data/raw/train.csv
+      hash: md5
+      md5: 80ccab65fb115cbad143dbbd2bcd5577
+      size: 460676
+    - path: pyproject.toml
+      hash: md5
+      md5: fa2ffaae046ded1027b10bafdee7325a
+      size: 610
+    - path: requirements.txt
+      hash: md5
+      md5: d16f10d7f9230ddd9647b35887dbef03
+      size: 3904
+    - path: src/house_price
+      hash: md5
+      md5: c95a58d1d6b2c92865d128c500da74c3.dir
+      size: 42211
+      nfiles: 16
+    params:
+      configs/config.yaml:
+        model:
+          n_estimators: 200
+          n_jobs: -1
+        quality_gate:
+          max_mae: 30000
+          max_rmse: 45000
+          min_r2: 0.75
+        random_state: 42
+        validation:
+          test_size: 0.2
+    outs:
+    - path: models/house_price_model.joblib
+      hash: md5
+      md5: c07cbf8a0297cd6ddee16be75d4c4915
+      size: 20537523
+    - path: reports/metrics.json
+      hash: md5
+      md5: 61fdea340ef50962a62661e0f1078deb
+      size: 627
