@@ -14,3 +14,6 @@ data/processed/*
 mlflow.db
 mlflow.db-*
 mlartifacts/
+
+# Generated Python package metadata
+*.egg-info/
