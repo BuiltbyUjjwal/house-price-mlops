@@ -7,6 +7,8 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
+import json
+from fastapi.responses import HTMLResponse
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATH = Path(
@@ -124,3 +126,24 @@ def predict(request: PredictionRequest):
     return {
         "predicted_sale_price": round(prediction, 2)
     }
+
+@app.get("/demo", response_class=HTMLResponse)
+def demo():
+    html_path = Path(__file__).with_name("demo.html")
+
+    return HTMLResponse(
+        content=html_path.read_text(encoding="utf-8")
+    )
+
+
+@app.get("/demo/sample")
+def demo_sample():
+    sample_path = Path(__file__).with_name(
+        "demo_sample.json"
+    )
+
+    features = json.loads(
+        sample_path.read_text(encoding="utf-8")
+    )
+
+    return {"features": features}

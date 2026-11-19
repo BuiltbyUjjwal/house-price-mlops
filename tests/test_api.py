@@ -97,3 +97,24 @@ def test_health_model_missing(monkeypatch, tmp_path):
     response = client.get("/health")
 
     assert response.status_code == 503
+
+def test_demo_page():
+    response = client.get("/demo")
+
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "House Price Studio" in response.text
+
+
+def test_demo_sample():
+    response = client.get("/demo/sample")
+
+    assert response.status_code == 200
+
+    features = response.json()["features"]
+
+    assert len(features) == 79
+    assert "OverallQual" in features
+    assert "GrLivArea" in features
+    assert "SalePrice" not in features
+    assert "Id" not in features
