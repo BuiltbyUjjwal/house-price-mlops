@@ -13,3 +13,9 @@ mlflow.db*
 notebooks/
 tests/
 reports/
+.env
+.env.*
+.dvc/
+build/
+dist/
+**/__pycache__/

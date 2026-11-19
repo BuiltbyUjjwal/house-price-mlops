@@ -9,16 +9,16 @@ stages:
       size: 460676
     - path: pyproject.toml
       hash: md5
-      md5: 71b8380e8fd8470489d1ac1f78542488
-      size: 652
+      md5: 1b33a7fbe1c4ad3e28c9ce5e43ab900d
+      size: 741
     - path: requirements.txt
       hash: md5
-      md5: b896e70e09df0e3c5f348397a9a0fbf6
-      size: 6258
+      md5: f1cb7b96b22a9a46d4c83889af1d350c
+      size: 160
     - path: src/house_price
       hash: md5
-      md5: fc23f85e0bd944105291b91e100111c0.dir
-      size: 49246
+      md5: 13b638d8e3238d4c18133dc707785534.dir
+      size: 50013
       nfiles: 18
     params:
       configs/config.yaml:

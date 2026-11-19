@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any
 
+import os
 import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
@@ -8,8 +9,16 @@ from pydantic import BaseModel, Field
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-MODEL_PATH = PROJECT_ROOT / "models" / "house_price_model.joblib"
-
+MODEL_PATH = Path(
+    os.getenv(
+        "HOUSE_PRICE_MODEL_PATH",
+        str(
+            PROJECT_ROOT
+            / "models"
+            / "house_price_model.joblib"
+        ),
+    )
+)
 _model = None
 
 app = FastAPI(
@@ -58,11 +67,11 @@ def root():
 
 @app.get("/health")
 def health():
-    available = MODEL_PATH.is_file()
+    get_model()
 
     return {
-        "status": "ok" if available else "model_missing",
-        "model_available": available,
+        "status": "ok",
+        "model_available": True,
     }
 
 
@@ -91,10 +100,17 @@ def predict(request: PredictionRequest):
             },
         )
 
+
     try:
         input_data = pd.DataFrame(
-            [request.features],
+            [
+                {
+                    name: float("nan") if value is None else value
+                    for name, value in request.features.items()
+                }
+            ],
             columns=expected,
+            dtype=object,
         )
 
         prediction = float(model.predict(input_data)[0])

@@ -73,3 +73,27 @@ def test_prediction_rejects_unexpected_features(monkeypatch):
 
     assert response.status_code == 422
     assert "unexpected_features" in response.json()["detail"]
+
+def test_health_success(monkeypatch):
+    monkeypatch.setattr(
+        api, "get_model", lambda: DummyModel()
+    )
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "ok"
+
+
+def test_health_model_missing(monkeypatch, tmp_path):
+    monkeypatch.setattr(api, "_model", None)
+
+    monkeypatch.setattr(
+        api,
+        "MODEL_PATH",
+        tmp_path / "missing_model.joblib",
+    )
+
+    response = client.get("/health")
+
+    assert response.status_code == 503
