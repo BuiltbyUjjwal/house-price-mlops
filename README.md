@@ -3,7 +3,11 @@
 [![CI](https://github.com/BuiltbyUjjwal/house-price-mlops/actions/workflows/ci.yml/badge.svg)](https://github.com/BuiltbyUjjwal/house-price-mlops/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 
-A reproducible machine learning pipeline for predicting residential sale prices from the Ames Housing dataset. The project combines data validation, preprocessing, model training, quality gates, experiment tracking, data and model versioning, API serving, containerization, and automated testing.
+A reproducible machine learning pipeline for predicting residential sale prices from the Ames Housing dataset. The project combines data validation, preprocessing, model training, quality gates, experiment tracking, data and model versioning, API serving, an interactive browser-based prediction dashboard, containerization, and automated testing.
+
+## Interactive demo
+
+Once the model and application are running, open **[House Price Studio](http://127.0.0.1:8000/demo)** in your browser. Edit eight property characteristics, select **Predict House Price**, and view the estimated sale price in US dollars. The dashboard sends a real request to the FastAPI prediction endpoint; the remaining model inputs come from a reference property. No separate frontend server is required. See the Quick start section below for setup instructions.
 
 ## Architecture
 
@@ -19,10 +23,14 @@ flowchart TD
     F --> I[Metrics JSON]
     D --> J[MLflow experiments]
     G --> J
-    G --> K[FastAPI inference service]
-    K --> L[Docker container]
-    M[Client JSON request] --> L
-    L --> N[Predicted sale price]
+    subgraph L[Docker container / local application]
+        U[Browser dashboard /demo] --> K[FastAPI inference service]
+        S[Reference property] --> U
+        K --> N[Predicted sale price]
+        N --> U
+    end
+    G --> K
+    M[Client JSON request] --> K
     O[DVC] -.-> A
     O -.-> C
     O -.-> D
@@ -58,6 +66,7 @@ Reference validation run using a random 80/20 split (seed 42):
 | Experiment tracking | MLflow with local SQLite |
 | Data and pipeline versioning | DVC |
 | Inference service | FastAPI, Uvicorn |
+| Interactive dashboard | HTML, CSS, JavaScript |
 | Containerization | Docker |
 | Testing and CI | pytest, GitHub Actions |
 
@@ -75,6 +84,8 @@ house-price-mlops/
 │   ├── api.py
 │   ├── config.py
 │   ├── data.py
+│   ├── demo.html
+│   ├── demo_sample.json
 │   ├── evaluation.py
 │   ├── preprocessing.py
 │   ├── tracking.py
@@ -158,13 +169,17 @@ After the model artifact is available:
 uvicorn house_price.api:app --host 127.0.0.1 --port 8000
 ```
 
-Open Swagger UI at <http://127.0.0.1:8000/docs>.
+Open the interactive dashboard at <http://127.0.0.1:8000/demo>. Change the editable property features, click the prediction button, and use Reset to restore the reference values.
+
+For direct API testing, open Swagger UI at <http://127.0.0.1:8000/docs>.
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | GET | `/` | Service information |
 | GET | `/health` | Model readiness check |
 | POST | `/predict` | Predict a house sale price |
+| GET | `/demo` | Interactive house-price dashboard |
+| GET | `/demo/sample` | Reference property features for the dashboard |
 
 The prediction endpoint expects a JSON object with a `features` field containing all 79 original feature names. Missing values can be represented by JSON `null`; absent or unexpected feature names are rejected.
 
@@ -196,7 +211,7 @@ docker logs house-price-test
 python -c "import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8000/health').read().decode())"
 ```
 
-Use the same prediction request from Step 5 to test inference through the container. Stop it when finished:
+Open <http://127.0.0.1:8000/demo> to use the dashboard served by Docker. The same prediction request from Step 5 can also test inference directly through the container. Stop it when finished:
 
 ```bash
 docker stop house-price-test
@@ -208,10 +223,11 @@ docker stop house-price-test
 python -m pytest -v
 ```
 
-The automated tests cover data validation, configuration validation, preprocessing with missing and unseen values, regression metrics, quality gates, prediction request validation, and API readiness. The project has been verified locally with 17 passing tests, successful MLflow model loading, and a real prediction through Docker. The CI workflow checks package consistency, DVC installation, and the test suite on Linux.
+The automated tests cover data validation, configuration validation, preprocessing with missing and unseen values, regression metrics, quality gates, prediction request validation, API readiness, and the two dashboard endpoints. The suite is expected to contain 19 tests with the UI additions. The previous 17-test version was verified locally, including successful MLflow model loading and a real prediction through Docker; rerun the suite and exercise the dashboard in a browser after the UI update. The CI workflow checks package consistency, DVC installation, and the test suite on Linux.
 
 ## Scope and limitations
 
+- The dashboard exposes eight of the 79 input features; the others are initialized from a reference property. Modified feature combinations may not describe realistic homes. Predictions reflect historical US housing data, not current Indian property prices.
 - The model is evaluated on a single holdout split from the Ames dataset; it is not a production real-estate valuation system.
 - MLflow and artifact storage are local by default. A shared DVC remote is required for artifact sharing and remote recovery.
 - CI runs tests, not full remote training or container deployment. The Docker image requires an available model artifact at build time.
